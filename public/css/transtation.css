@@ -1,11 +1,12 @@
 .bottom-enter, .bottom-leave-to {
-  transform: translate3d(0, 100%, 0)
+  transform:scale(1, 0)
 }
 .bottom-leave, .bottom-enter-to {
+  transform:scale(1, 1)
 /* transform: translate3d(0, 0, 0) */
 }
 .bottom-enter-active, .bottom-leave-active {
-transition: all 0.5s
+transition: all 0.3s linear
 }
 .left-enter, .left-leave-to {
   transform: translate3d(100%, 0, 0)
@@ -17,3 +18,5 @@ transition: all 0.5s
 .left-enter-active, .left-leave-active {
 transition: all 0.5s
 }
+/**显示隐藏*/
+
