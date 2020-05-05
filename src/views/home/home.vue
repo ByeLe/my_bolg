@@ -6,12 +6,13 @@
       <img src="./img/bg_1.jpg" alt="">
     </div>
     <div class="mask">
-      <my-header :selectPath="nowPath"></my-header>
-      <div class="middle">
+      <my-header :selectPath="nowPath">
+      </my-header>
+      <div class="middle" v-show="!showMenus">
         <p>Hello World</p>
          <p>Created By Bye丶L</p>
       </div>
-      <div class="bottmset">
+      <div class="bottmset" v-show="!showMenus">
         <ul class="callWay">
           <li class="iconfont icon-github"></li>
           <li class="iconfont icon-weixin"></li>
@@ -24,6 +25,7 @@
 
 <script>
 import myHeader from '@/components/myHeader/myHeader.vue'
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -37,6 +39,11 @@ export default {
   },
   mounted() {
     this.moveBanner()
+  },
+  computed: {
+    ...mapState({
+      showMenus: state => state.menus.showMenus
+    })
   },
   components: {
     'my-header': myHeader
@@ -71,6 +78,13 @@ export default {
 </script>
 
 <style scoped>
+@media screen and (max-width: 800px){
+  .banner img{
+  /* height: 100% !important;
+  width: auto !important;
+  float: left; */
+}
+}
 .homecontent{
   width: 100%;
   height: 100%;

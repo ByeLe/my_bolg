@@ -5,22 +5,21 @@
     </div>
     <div class="contentMask">
       <my-header :selectPath="nowPath" class="headerBg">
-        <div class="mobilmenu"  @click="changeMenusActive"  :class="[showMenus ? 'mobilmenuActive' : 'mobilmenuHide']">
-          <i class="iconfont icon-caidan"></i>
-        </div>
-        <div class="mobileheadContent" v-show="showMenus">
-          <p>主页</p>
-          <p>个人中心</p>
-          <p class="select">文章中心</p>
-          <typelist-mobile></typelist-mobile>
-          <typelist-mobile></typelist-mobile>
-          <typelist-mobile></typelist-mobile>
-        </div>
+        <articletype-list v-for="(item, index) in typeList" :key="index"
+            :typeTitle="item.title"
+            :typeListDetail="item.detailArr"
+            :typeName="item.type">
+          </articletype-list>
+        <!-- </div> -->
       </my-header>
       <div class="contentArea">
          <div class="articleindex">
             <div class="waperContent">
-             <articletype-list v-for="(item, index) in typeList" :key="index" :typeTitle="item.title"></articletype-list>
+             <articletype-list v-for="(item, index) in typeList" :key="index"
+                :typeTitle="item.title"
+                :typeListDetail="item.detailArr"
+                :typeName="item.type">
+            </articletype-list>
            </div>
          </div>
          <div class="articleee" v-show="!showMenus">
@@ -51,42 +50,87 @@
 import myHeader from '@/components/myHeader/myHeader.vue'
 import articleTypeList from '@/components/articleTypeList/articleTypeList.vue'
 import articleInfo from '@/components/articleInfo/articleInfo.vue'
-import typeListMobile from '@/components/typeListMobile/typeListMobile.vue'
+import { mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {
       nowPath: 'Article',
       testImagUrl: 'http://seopic.699pic.com/photo/50007/0704.jpg_wh1200.jpg',
       typeList: [
-        { title: 'HTML5' },
-        { title: 'JAVASCRIT' },
-        { title: 'CSS' },
-        { title: 'VUE' }
+        {
+          title: 'JAVASCRIPT',
+          type: 'JAVASCRIPT',
+          detailArr: [
+            {
+              name: '什么是JS',
+              id: 5
+            },
+            {
+              name: 'JS的作用域',
+              id: 6
+            },
+            {
+              name: 'JS作用域之上下文',
+              id: 7
+            },
+            {
+              name: '查看全部',
+              id: 'JAVASCRIPT'
+            }
+          ]
+        },
+        {
+          title: 'HTML5',
+          type: 'HTML5',
+          detailArr: [
+            {
+              name: '什么是HTML5',
+              id: 2
+            },
+            {
+              name: 'HTML5常见标签',
+              id: 3
+            },
+            {
+              name: 'HTML浏览器解析原理',
+              id: 4
+            },
+            {
+              name: '查看全部',
+              id: 'HTML'
+            }
+          ]
+        }
       ],
-      titleSViewAdd: false,
-      showMenus: false
+      titleSViewAdd: false
     }
   },
   mounted() {
-    setTimeout(() => {
-      this.titleSViewAdd = true
-    }, 2000)
+    this.getArticleInfo()
+  },
+  computed: {
+    ...mapState({
+      parentType: state => state.scheme.parentType,
+      selectId: state => state.scheme.selectId,
+      showMenus: state => state.menus.showMenus
+    })
   },
   methods: {
+    ...mapMutations(['changeSelectScheme']),
     getArticleInfo() {
-      // var child = this.$refs.atticleInfoList.children
+      if (this.parentType === '') { // 说明没有类型
+        this.changeSelectScheme({ parentType: this.typeList[0].type, selectId: this.typeList[0].type })
+      }
     },
-    changeMenusActive() {
-      this.showMenus = !this.showMenus
+    getScheme() {
+      // 这里需要去服务端请求，目前先是假数据
     }
   },
   components: {
     'my-header': myHeader,
     'articletype-list': articleTypeList,
     // eslint-disable-next-line vue/no-unused-components
-    'article-info': articleInfo,
-    // eslint-disable-next-line vue/no-unused-components
-    'typelist-mobile': typeListMobile
+    'article-info': articleInfo
   }
 }
 </script>
@@ -190,59 +234,8 @@ export default {
 .articleeeList :hover{
   cursor: pointer;
 }
-/* 移动端导航条 */
-.mobilmenu{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.5s;
-  /* color: #ffffff; */
-}
-/**菜单选中 */
-.mobilmenuHide{
-  background-color: none;
-  border: 1px solid rgba(0, 0, 0, 0);
-  color:#ffffff;
-}
-.mobilmenuActive{
-  border: 1px solid #ffffff;
-  color: #ffffff;
-}
 .icon-caidan{
   font-size: 26px;
 }
-.mobileheadContent{
-  width:90%;
-  /* height: 200px; */
-  margin: 0  auto;
-  position: absolute;
-  right: 0px;
-  left: 0px;
-  /* top: 0px; */
-  margin-left: auto;
-  margin-right: auto;
-  /* background-color: #F0F0F0; */
-  border: 1px solid #ffffff;
-  z-index: 999;
-  transition: all 0.5s;
-  /* max-height: 0; */
-}
-.mobileheadContent p{
-  width: 90%;
-  height: 40px;
-  line-height: 40px;
-  margin:  0 auto;
-  color: #ffffff;
-  padding-left: 0px;
-  cursor: pointer;
-  transition: all 0.5s;
-  box-sizing: border-box;
-  padding-left: 10px;
-}
-.mobileheadContent p:hover{
-  color:lightgreen;
-  transform: scale(1.1, 1.1);
-}
+
 </style>

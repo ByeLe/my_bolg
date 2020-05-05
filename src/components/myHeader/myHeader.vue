@@ -3,19 +3,43 @@
     <div class="headerset">
         <span>BLOG OF Bye丶L</span>
         <ul class="desc">
-           <li :class="[selectPath == 'Home' ? 'select' : '']">主页</li>
+           <router-link tag="li" :to="{path:'/Home'}" :class="[selectPath == 'Home' ? 'select' : '']">主页</router-link>
           <li>个人介绍</li>
-          <li :class="[selectPath == 'Article' ? 'select' : '']">文章中心</li>
+          <router-link  tag="li" :to="{path:'/Article'}" :class="[selectPath == 'Article' ? 'select' : '']">文章中心</router-link>
       </ul>
       <div class="mobileDesc">
-        <slot></slot>
+        <div class="mobilmenu" @click="changeMenusActive"  :class="[showMenus ? 'mobilmenuActive' : 'mobilmenuHide']">
+          <i class="iconfont icon-caidan"></i>
+        </div>
+        <div class="mobileheadContent" v-show="showMenus">
+          <p>主页</p>
+          <p>个人中心</p>
+          <p class="select">文章中心</p>
+          <slot></slot>
+        </div>
       </div>
       </div>
   </div>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 export default {
+  data() {
+    return {
+    }
+  },
+  computed: {
+    ...mapState({
+      showMenus: state => state.menus.showMenus
+    })
+  },
+  methods: {
+    ...mapMutations(['changeShowMenus']),
+    changeMenusActive() {
+      this.changeShowMenus()
+    }
+  },
   props: {
     selectPath: {
       type: String,
@@ -85,5 +109,62 @@ export default {
 .desc li:hover{
   background-color: #5bc0de;
   border-radius: 10px;
+}
+.mobilmenu{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s;
+  /* color: #ffffff; */
+}
+/**菜单选中 */
+.mobilmenuHide{
+  background-color: none;
+  border: 1px solid rgba(0, 0, 0, 0);
+  color:#ffffff;
+}
+.mobilmenuActive{
+  border: 1px solid #ffffff;
+  color: #ffffff;
+}
+.mobileheadContent{
+  width:90%;
+  max-height: 500px;
+  overflow: auto;
+  margin: 0  auto;
+  position: absolute;
+  right: 0px;
+  left: 0px;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* border: 1px solid #ffffff; */
+  z-index: 999;
+  transition: all 0.5s;
+  margin-bottom: 20px;
+}
+.mobileheadContent p{
+  width: 90%;
+  height: 40px;
+  line-height: 40px;
+  margin:  0 auto;
+  color: #ffffff;
+  padding-left: 0px;
+  cursor: pointer;
+  transition: all 0.5s;
+  box-sizing: border-box;
+  padding-left: 10px;
+}
+.mobileheadContent p:first-of-type{
+  margin-top: 20px;
+}
+.mobileheadContent p:last-of-type{
+  margin-bottom: 20px;
+}
+.mobileheadContent p:hover{
+  color:lightgreen;
+  transform: scale(1.1, 1.1);
 }
 </style>
