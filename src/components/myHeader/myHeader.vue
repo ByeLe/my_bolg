@@ -12,9 +12,9 @@
           <i class="iconfont icon-caidan"></i>
         </div>
         <div class="mobileheadContent" v-show="showMenus">
-          <p>主页</p>
+          <router-link tag="p" :to="{path:'/Home'}" :class="[selectPath == 'Home' ? 'select' : '']">主页</router-link>
           <p>个人中心</p>
-          <p class="select">文章中心</p>
+          <router-link tag="p" :to="{path:'/Article'}" :class="[selectPath == 'Article' ? 'select' : '']">文章中心</router-link>
           <slot></slot>
         </div>
       </div>

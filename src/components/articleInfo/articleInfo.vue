@@ -1,14 +1,14 @@
 <template>
-  <div class="infocontent">
+  <div class="infocontent" @click="openNewWindow">
     <div class="infohead">
       <i class="iconfont icon-html5" v-if="fileType === 'HTML5'"></i>
       <i class="iconfont icon-socialcss3"  v-if="fileType === 'CSS'"></i>
-      <i class="iconfont icon-JS"  v-if="fileType === 'JS'"></i>
+      <i class="iconfont icon-JS"  v-if="fileType === 'JavaScript'"></i>
       <i class="iconfont icon-vuejs"  v-if="fileType === 'VUE'"></i>
     </div>
     <div class="infodesc">
-      <p class="title">12345123451234512345123451234512345123451234512345</p>
-      <span>这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域这是美容详细区域</span>
+      <p class="title">{{title}}</p>
+      <span>{{desc}}</span>
     </div>
   </div>
 </template>
@@ -19,6 +19,24 @@ export default {
     fileType: {
       type: String,
       default: 'VUE'
+    },
+    desc: {
+      type: String,
+      default: '这篇文章值得您观看'
+    },
+    title: {
+      type: String,
+      default: ''
+    },
+    path: {
+      type: String,
+      default: ''
+    }
+  },
+  methods: {
+    openNewWindow() {
+      console.log(this.path)
+      window.open(this.axios.defaults.baseURL + this.path)
     }
   }
 }

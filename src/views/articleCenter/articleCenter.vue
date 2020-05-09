@@ -8,7 +8,8 @@
         <articletype-list v-for="(item, index) in typeList" :key="index"
             :typeTitle="item.title"
             :typeListDetail="item.detailArr"
-            :typeName="item.type">
+            :typeName="item.type"
+            :path="item.path">
           </articletype-list>
         <!-- </div> -->
       </my-header>
@@ -25,19 +26,12 @@
          <div class="articleee" v-show="!showMenus">
            <div class="articleeewrpeer">
             <div ref="atticleInfoList" class="atticleInfoList">
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
-              <article-info class="articleeeList"></article-info>
+              <article-info class="articleeeList"
+              v-for="(item, index) in articleList"   :key="index"
+              :title="item.title"
+              :desc="item.fileDesc"
+              :fileType="item.type"
+              :path="item.path"></article-info>
             </div>
          </div>
          </div>
@@ -56,57 +50,17 @@ export default {
     return {
       nowPath: 'Article',
       testImagUrl: 'http://seopic.699pic.com/photo/50007/0704.jpg_wh1200.jpg',
-      typeList: [
-        {
-          title: 'JAVASCRIPT',
-          type: 'JAVASCRIPT',
-          detailArr: [
-            {
-              name: '什么是JS',
-              id: 5
-            },
-            {
-              name: 'JS的作用域',
-              id: 6
-            },
-            {
-              name: 'JS作用域之上下文',
-              id: 7
-            },
-            {
-              name: '查看全部',
-              id: 'JAVASCRIPT'
-            }
-          ]
-        },
-        {
-          title: 'HTML5',
-          type: 'HTML5',
-          detailArr: [
-            {
-              name: '什么是HTML5',
-              id: 2
-            },
-            {
-              name: 'HTML5常见标签',
-              id: 3
-            },
-            {
-              name: 'HTML浏览器解析原理',
-              id: 4
-            },
-            {
-              name: '查看全部',
-              id: 'HTML'
-            }
-          ]
-        }
-      ],
-      titleSViewAdd: false
+      typeList: [],
+      titleSViewAdd: false,
+      articleList: []
     }
   },
   mounted() {
-    this.getArticleInfo()
+    this.getActicleType()
+    this.setContentArticle()
+    if (this.showMenus) {
+      this.changeShowMenus()
+    }
   },
   computed: {
     ...mapState({
@@ -116,7 +70,60 @@ export default {
     })
   },
   methods: {
-    ...mapMutations(['changeSelectScheme']),
+    ...mapMutations(['changeSelectScheme', 'changeShowMenus']),
+    async getActicleType() {
+      const { data: res } = await this.axios.get('/classification/select')
+      this.typeList = []
+      if (res.status === 200) {
+        for (var i = 0; i < res.data.length; i++) {
+          const obj = {}
+          obj.title = res.data[i].type
+          obj.type = res.data[i].type
+          this.getArticleFromService(obj, res.data[i].type, res.data.length)
+        }
+      }
+    },
+    async setContentArticle() {
+      if (this.parentType.length === 0) {
+        return
+      }
+      const { data: res } = await this.axios.get('/getArticleByType', {
+        params: {
+          page: 0,
+          size: 10,
+          selectType: this.parentType
+        }
+      })
+      if (res.status === 200) {
+        this.articleList = this.articleList.concat(res.data.detail)
+        console.log('这是右侧文章区域')
+      }
+    },
+    async getArticleFromService(obj, type, compareLen) {
+      const { data: res } = await this.axios.get('/getArticleByType', {
+        params: {
+          page: 0,
+          size: 5,
+          selectType: type
+        }
+      })
+      if (res.status === 200) {
+        const detail = res.data.detail
+        for (var i = 0; i < detail.length; i++) {
+          detail[i].name = detail[i].title
+        }
+        detail.push({
+          name: '查看全部',
+          id: type
+        })
+        console.log(detail)
+        obj.detailArr = detail
+        this.typeList.push(obj)
+        if (this.typeList.length === compareLen) {
+          this.getArticleInfo()
+        }
+      }
+    },
     getArticleInfo() {
       if (this.parentType === '') { // 说明没有类型
         this.changeSelectScheme({ parentType: this.typeList[0].type, selectId: this.typeList[0].type })
@@ -124,6 +131,11 @@ export default {
     },
     getScheme() {
       // 这里需要去服务端请求，目前先是假数据
+    }
+  },
+  watch: {
+    parentType() {
+      this.setContentArticle()
     }
   },
   components: {

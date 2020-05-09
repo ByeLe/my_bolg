@@ -35,12 +35,17 @@ export default {
     })
   },
   methods: {
-    ...mapMutations(['changeSelectScheme']),
+    ...mapMutations(['changeSelectScheme', 'changeShowMenus']),
     changeViewActive() {
       this.isOpen = !this.isOpen
     },
     clickItem(data) {
       console.log(data)
+      this.changeShowMenus()
+      if (data.path) {
+        window.open(this.axios.defaults.baseURL + data.path)
+        return false
+      }
       if (data.id) {
         this.changeSelectScheme({ parentType: this.parentType, selectId: data.id })
       }
@@ -54,6 +59,10 @@ export default {
     typeName: {
       type: String,
       default: 'JS'
+    },
+    path: {
+      type: String,
+      default: ''
     },
     typeListDetail: {
       type: Array,
@@ -108,8 +117,12 @@ h2{
 .typelist span{
   display: block;
   /* color: #ffffff; */
-  padding-left: 30px;
-   /* transition: all 0.5s; */
+  padding-left: 0px;
+  transition: all 0.5s;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  margin: 0 auto
 }
 .selectType{
   color: lightgreen;

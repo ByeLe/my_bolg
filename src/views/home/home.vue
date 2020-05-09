@@ -1,9 +1,14 @@
 <template>
   <div class="homecontent">
-    <div class="banner" :style="bannerStyle">
+    <div class="banner" :style="bannerStyle" v-if="!showBannerShu">
       <img src="./img/banner.jpg" alt="">
       <img src="./img/cover.jpg" alt="">
       <img src="./img/bg_1.jpg" alt="">
+    </div>
+    <div class="bannershu" :style="bannerStyle"  v-if="showBannerShu">
+      <img src="./img/shu1.jpg" alt="">
+      <img src="./img/shu2.jpg" alt="">
+      <img src="./img/shu3.jpg" alt="">
     </div>
     <div class="mask">
       <my-header :selectPath="nowPath">
@@ -25,7 +30,7 @@
 
 <script>
 import myHeader from '@/components/myHeader/myHeader.vue'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -34,11 +39,28 @@ export default {
       bannerNum: 3,
       slideFlag: 'left',
       timer: '23:39:40',
-      nowPath: 'Home'
+      nowPath: 'Home',
+      showBannerShu: true,
+      canNext: true
     }
   },
   mounted() {
+    window.onresize = () => {
+      console.log('页面大小改变')
+      if (this.canNext) {
+        this.getClientSize()
+        this.canNext = false
+        setTimeout(() => {
+          this.canNext = true
+          this.getClientSize()
+        }, 2000)
+      }
+    }
+    this.getClientSize()
     this.moveBanner()
+    if (this.showMenus) {
+      this.changeShowMenus()
+    }
   },
   computed: {
     ...mapState({
@@ -49,6 +71,10 @@ export default {
     'my-header': myHeader
   },
   methods: {
+    ...mapMutations(['changeShowMenus']),
+    getClientSize() {
+      this.showBannerShu = window.innerWidth < window.innerHeight
+    },
     moveBanner() {
       setInterval(() => {
         if (this.slideFlag === 'left') {
@@ -70,7 +96,6 @@ export default {
             this.slideFlag = 'left'
           }
         }
-        console.log(this.bannerStyle)
       }, 3000)
     }
   }
@@ -91,12 +116,18 @@ export default {
   overflow: hidden;
   position: relative;
 }
-.banner{
+.banner,.bannershu{
   position: relative;
   width:300%;
   height: 100%;
   transition: all 1s;
   left:-0%;
+}
+.bannershu img{
+  display: block;
+  width: 33.3%;
+  height: 100%;
+  float: left;
 }
 .banner img{
   display: block;
